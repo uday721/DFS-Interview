@@ -1,8 +1,8 @@
 package com.example.shanker.pomodorotimer;
 
-
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,33 +10,20 @@ import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-
-
-
-public class SettingsFragment extends android.support.v4.app.Fragment {
-
-    public static SeekBar workTimeSeekBar;
-    public static SeekBar breakTimeSeekBar;
-    public static SeekBar longBreakSeekBar;
-    public static SeekBar recurringCountSeekBar;
-
-    public static TextView workTimeText;
-    public static TextView breakTimeText;
-    public static TextView longBreakTimeText;
-    public static TextView sessionCountText;
-
+public class SettingsFragment extends Fragment {
+    private SeekBar workTimeSeekBar;
+    private SeekBar breakTimeSeekBar;
+    private SeekBar longBreakSeekBar;
+    private SeekBar recurringCountSeekBar;
+    private TextView workTimeText;
+    private TextView breakTimeText;
+    private TextView longBreakTimeText;
+    private TextView sessionCountText;
     private EditText editActivityText;
-
-
-
-    private int getWorkTime;
-    private int getBreakTime;
-    private int getLongBreakTime;
-    private int getRecurringCount;
-
-
-
-
+    private int workTime;
+    private int breakTime;
+    private int longBreakTime;
+    private int recurringCount;
 
     @Nullable
     @Override
@@ -58,7 +45,6 @@ public class SettingsFragment extends android.support.v4.app.Fragment {
 
         seekBar();
         return view;
-
     }
 
     //accessing the values from seek bar
@@ -67,20 +53,19 @@ public class SettingsFragment extends android.support.v4.app.Fragment {
 
         //work time default values
         workTimeText.setText(workTimeSeekBar.getProgress()+" Minutes");
-        getWorkTime=workTimeSeekBar.getProgress();
+        workTime =workTimeSeekBar.getProgress();
 
         //break time default values
         breakTimeText.setText((breakTimeSeekBar.getProgress()+" Minutes"));
-        getBreakTime=breakTimeSeekBar.getProgress();
+        breakTime =breakTimeSeekBar.getProgress();
 
         //long break default values
         longBreakTimeText.setText(longBreakSeekBar.getProgress()+" Minutes");
-        getLongBreakTime=longBreakSeekBar.getProgress();
+        longBreakTime =longBreakSeekBar.getProgress();
 
         //recurring session count default values
         sessionCountText.setText(recurringCountSeekBar.getProgress()+" Sessions");
-        getRecurringCount=recurringCountSeekBar.getProgress();
-
+        recurringCount =recurringCountSeekBar.getProgress();
 
         workTimeSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             int progressValue;
@@ -88,7 +73,6 @@ public class SettingsFragment extends android.support.v4.app.Fragment {
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
                 progressValue=i;
                 workTimeText.setText(progressValue+" Minutes");
-
             }
 
             @Override
@@ -99,7 +83,7 @@ public class SettingsFragment extends android.support.v4.app.Fragment {
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 workTimeText.setText(progressValue+" Minutes");
-                getWorkTime=progressValue;
+                workTime =progressValue;
             }
         });
 
@@ -112,16 +96,15 @@ public class SettingsFragment extends android.support.v4.app.Fragment {
             }
 
             @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
+            public void onStartTrackingTouch(SeekBar seekBar) {}
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 breakTimeText.setText(progressValue+" Minutes");
-                getBreakTime=progressValue;
+                breakTime =progressValue;
             }
         });
+
         longBreakSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             int progressValue;
             @Override
@@ -131,16 +114,15 @@ public class SettingsFragment extends android.support.v4.app.Fragment {
             }
 
             @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
+            public void onStartTrackingTouch(SeekBar seekBar) {}
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 longBreakTimeText.setText(progressValue+" Minutes");
-                getLongBreakTime=progressValue;
+                longBreakTime =progressValue;
             }
         });
+
         recurringCountSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             int progressValue;
             @Override
@@ -150,37 +132,33 @@ public class SettingsFragment extends android.support.v4.app.Fragment {
             }
 
             @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
+            public void onStartTrackingTouch(SeekBar seekBar) {}
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 sessionCountText.setText(progressValue+" Sessions");
-                getRecurringCount=progressValue;
+                recurringCount =progressValue;
             }
         });
     }
 
     //Getters and Setters
-    public int getGetWorkTime() {
-        return getWorkTime;
+    public int getWorkTime() {
+        return workTime;
     }
 
-    public int getGetBreakTime() {
-        return getBreakTime;
+    public int getBreakTime() {
+        return breakTime;
     }
 
-    public int getGetLongBreakTime() {
-        return getLongBreakTime;
+    public int getLongBreakTime() {
+        return longBreakTime;
     }
 
-    public int getGetRecurringCount() {
-        return getRecurringCount;
+    public int getRecurringCount() {
+        return recurringCount;
     }
     public String getEditActivityText() {
         return editActivityText.getText().toString();
     }
-
-
 }
