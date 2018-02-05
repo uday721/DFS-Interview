@@ -110,11 +110,12 @@ public class MainActivity extends AppCompatActivity {
         mSessionType=SessionType.WORK;
         mTimerState=TimerState.RUNNING;
         SettingsFragment settingFrag = (SettingsFragment)getSupportFragmentManager().findFragmentById(R.id.settings_fragment);
+
         mTimer=new Timer();
-        mTimer.setWorkTime(TimeUnit.MINUTES.toSeconds(settingFrag.getGetWorkTime()));
-        mTimer.setShortBreak(TimeUnit.MINUTES.toSeconds(settingFrag.getGetBreakTime()));
-        mTimer.setLongBreak(TimeUnit.MINUTES.toSeconds(settingFrag.getGetLongBreakTime()));
-        mTimer.setRecurringLongBreak(settingFrag.getGetRecurringCount());
+        mTimer.setWorkTime(TimeUnit.MINUTES.toSeconds(settingFrag.getWorkTime()));
+        mTimer.setShortBreak(TimeUnit.MINUTES.toSeconds(settingFrag.getBreakTime()));
+        mTimer.setLongBreak(TimeUnit.MINUTES.toSeconds(settingFrag.getLongBreakTime()));
+        mTimer.setRecurringLongBreak(settingFrag.getRecurringCount());
         mPlaceHolderActivityName = settingFrag.getEditActivityText();
 //        if(mPlaceHolderActivityName==mEmpty)
 //            mPlaceHolderActivityName=mDefaultActivity;
