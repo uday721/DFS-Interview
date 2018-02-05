@@ -23,9 +23,9 @@ public class SettingsFragment extends android.support.v4.app.Fragment {
     public static TextView workTimeText;
     public static TextView breakTimeText;
     public static TextView longBreakTimeText;
-    public static TextView recurringCountText;
+    public static TextView sessionCountText;
 
-    private EditText editActivitytext;
+    private EditText editActivityText;
 
 
 
@@ -43,6 +43,7 @@ public class SettingsFragment extends android.support.v4.app.Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.activity_settings,container,false);
 
+        //Setting all the necessary references
         workTimeSeekBar = view.findViewById(R.id.work_seek_bar);
         breakTimeSeekBar = view.findViewById(R.id.break_seek_bar);
         longBreakSeekBar = view.findViewById(R.id.long_break_seek_bar);
@@ -51,15 +52,16 @@ public class SettingsFragment extends android.support.v4.app.Fragment {
         workTimeText = view.findViewById(R.id.work_text_view);
         breakTimeText = view.findViewById(R.id.break_text_view);
         longBreakTimeText = view.findViewById(R.id.long_break_text_view);
-        recurringCountText=view.findViewById(R.id.recurring_text_view);
+        sessionCountText =view.findViewById(R.id.recurring_text_view);
 
-        editActivitytext = view.findViewById(R.id.activity_input);
+        editActivityText = view.findViewById(R.id.activity_input);
 
         seekBar();
         return view;
 
     }
 
+    //accessing the values from seek bar
     private void seekBar() {
         //Default time for work, break and long break
 
@@ -76,7 +78,7 @@ public class SettingsFragment extends android.support.v4.app.Fragment {
         getLongBreakTime=longBreakSeekBar.getProgress();
 
         //recurring session count default values
-        recurringCountText.setText(recurringCountSeekBar.getProgress()+" Sessions");
+        sessionCountText.setText(recurringCountSeekBar.getProgress()+" Sessions");
         getRecurringCount=recurringCountSeekBar.getProgress();
 
 
@@ -144,7 +146,7 @@ public class SettingsFragment extends android.support.v4.app.Fragment {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
                 progressValue=i;
-                recurringCountText.setText(progressValue+" Times");
+                sessionCountText.setText(progressValue+" Sessions");
             }
 
             @Override
@@ -154,12 +156,13 @@ public class SettingsFragment extends android.support.v4.app.Fragment {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                recurringCountText.setText(progressValue+" Times");
+                sessionCountText.setText(progressValue+" Sessions");
                 getRecurringCount=progressValue;
             }
         });
     }
 
+    //Getters and Setters
     public int getGetWorkTime() {
         return getWorkTime;
     }
@@ -175,8 +178,8 @@ public class SettingsFragment extends android.support.v4.app.Fragment {
     public int getGetRecurringCount() {
         return getRecurringCount;
     }
-    public String getEditActivitytext() {
-        return editActivitytext.getText().toString();
+    public String getEditActivityText() {
+        return editActivityText.getText().toString();
     }
 
 

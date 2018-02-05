@@ -10,25 +10,19 @@ import java.util.concurrent.TimeUnit;
 
 public class Timer {
 
-    private long mWorkTime = 10;
-    private long mShortBreak = 3;
-    private long mLongBreak = 5;
+    private long mWorkTime;
+    private long mShortBreak;
+    private long mLongBreak;
     private long mCountDownTime;
     private long mPlaceholderCountDownTime;
-    private int mSessionBeforeLongBreak = 4;
+    private int mSessionBeforeLongBreak;
     private int mPausedCountDownTime;
     private SessionType mCurrentSessionType;
 
 
-   // Handler mHandler = new Handler();
 
-    TimerState mTimerState;
-
-
-
-
+//this is count down time plus system time.
     public void getCountDownTime(SessionType sessionType) {
-
 
         long currentTime = SystemClock.elapsedRealtime();
         mCurrentSessionType=sessionType;
@@ -44,22 +38,16 @@ public class Timer {
                 mCountDownTime = currentTime +TimeUnit.SECONDS.toMillis(mLongBreak) ;
                 break;
         }
-
-
     }
 
     public int getTimeRemaining(){
-
         return (int) (TimeUnit.MILLISECONDS.toSeconds(
                 mCountDownTime - SystemClock.elapsedRealtime()));
     }
 
-    public void pauseCountDownTimer(SessionType sessionType){
-
+    public void pauseCountDownTimer(){
         mPausedCountDownTime = getTimeRemaining();
         mPlaceholderCountDownTime = mPausedCountDownTime;
-
-
     }
 
     public void unPauseCountDownTimer(SessionType sessionType){
@@ -70,10 +58,9 @@ public class Timer {
             mCountDownTime=TimeUnit.SECONDS.toMillis(mPausedCountDownTime)+ currentTime;
         if(sessionType==SessionType.LONG_BREAK)
             mCountDownTime=TimeUnit.SECONDS.toMillis(mPausedCountDownTime)+ currentTime;
-
     }
 
-
+    //Getters and Setters
     public SessionType getSessionType() {
         return mCurrentSessionType;
     }
