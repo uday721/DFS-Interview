@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -24,10 +25,15 @@ public class SettingsFragment extends android.support.v4.app.Fragment {
     public static TextView longBreakTimeText;
     public static TextView recurringCountText;
 
+    private EditText editActivitytext;
+
+
+
     private int getWorkTime;
     private int getBreakTime;
     private int getLongBreakTime;
     private int getRecurringCount;
+
 
 
 
@@ -47,12 +53,32 @@ public class SettingsFragment extends android.support.v4.app.Fragment {
         longBreakTimeText = view.findViewById(R.id.long_break_text_view);
         recurringCountText=view.findViewById(R.id.recurring_text_view);
 
+        editActivitytext = view.findViewById(R.id.activity_input);
+
         seekBar();
         return view;
 
     }
 
     private void seekBar() {
+        //Default time for work, break and long break
+
+        //work time default values
+        workTimeText.setText(workTimeSeekBar.getProgress()+" Minutes");
+        getWorkTime=workTimeSeekBar.getProgress();
+
+        //break time default values
+        breakTimeText.setText((breakTimeSeekBar.getProgress()+" Minutes"));
+        getBreakTime=breakTimeSeekBar.getProgress();
+
+        //long break default values
+        longBreakTimeText.setText(longBreakSeekBar.getProgress()+" Minutes");
+        getLongBreakTime=longBreakSeekBar.getProgress();
+
+        //recurring session count default values
+        recurringCountText.setText(recurringCountSeekBar.getProgress()+" Sessions");
+        getRecurringCount=recurringCountSeekBar.getProgress();
+
 
         workTimeSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             int progressValue;
@@ -60,11 +86,12 @@ public class SettingsFragment extends android.support.v4.app.Fragment {
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
                 progressValue=i;
                 workTimeText.setText(progressValue+" Minutes");
+
             }
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-
+                workTimeText.setText(progressValue+" Minutes");
             }
 
             @Override
@@ -147,6 +174,9 @@ public class SettingsFragment extends android.support.v4.app.Fragment {
 
     public int getGetRecurringCount() {
         return getRecurringCount;
+    }
+    public String getEditActivitytext() {
+        return editActivitytext.getText().toString();
     }
 
 

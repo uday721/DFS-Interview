@@ -11,12 +11,14 @@ import java.util.concurrent.TimeUnit;
 public class Timer {
 
     private long mWorkTime = 10;
-    private long mCountDownTime;
     private long mShortBreak = 3;
     private long mLongBreak = 5;
-    private int mRecurringLongBreak = 4;
+    private long mCountDownTime;
+    private long mPlaceholderCountDownTime;
+    private int mSessionBeforeLongBreak = 4;
     private int mPausedCountDownTime;
     private SessionType mCurrentSessionType;
+
 
    // Handler mHandler = new Handler();
 
@@ -26,8 +28,6 @@ public class Timer {
 
 
     public void getCountDownTime(SessionType sessionType) {
-
-
 
 
         long currentTime = SystemClock.elapsedRealtime();
@@ -44,16 +44,33 @@ public class Timer {
                 mCountDownTime = currentTime +TimeUnit.SECONDS.toMillis(mLongBreak) ;
                 break;
         }
+
+
     }
 
     public int getTimeRemaining(){
+
         return (int) (TimeUnit.MILLISECONDS.toSeconds(
                 mCountDownTime - SystemClock.elapsedRealtime()));
     }
 
-    public void pauseCountDownTimer(){
+    public void pauseCountDownTimer(SessionType sessionType){
+
         mPausedCountDownTime = getTimeRemaining();
-        mWorkTime=TimeUnit.SECONDS.toMillis(mPausedCountDownTime)  ;
+        mPlaceholderCountDownTime = mPausedCountDownTime;
+
+
+    }
+
+    public void unPauseCountDownTimer(SessionType sessionType){
+        long currentTime = SystemClock.elapsedRealtime();
+        if(sessionType==SessionType.WORK)
+            mCountDownTime=TimeUnit.SECONDS.toMillis(mPausedCountDownTime)+ currentTime ;
+        if(sessionType==SessionType.SHORT_BREAK)
+            mCountDownTime=TimeUnit.SECONDS.toMillis(mPausedCountDownTime)+ currentTime;
+        if(sessionType==SessionType.LONG_BREAK)
+            mCountDownTime=TimeUnit.SECONDS.toMillis(mPausedCountDownTime)+ currentTime;
+
     }
 
 
@@ -62,7 +79,7 @@ public class Timer {
     }
 
     public int getRecurringLongBreak(){
-        return mRecurringLongBreak;
+        return mSessionBeforeLongBreak;
     }
 
     public void setWorkTime(long mWorkTime) {
@@ -78,6 +95,6 @@ public class Timer {
     }
 
     public void setRecurringLongBreak(int mRecurringLongBreak) {
-        this.mRecurringLongBreak = mRecurringLongBreak;
+        this.mSessionBeforeLongBreak = mRecurringLongBreak;
     }
 }

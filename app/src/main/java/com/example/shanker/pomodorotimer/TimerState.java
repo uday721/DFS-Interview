@@ -2,7 +2,7 @@ package com.example.shanker.pomodorotimer;
 
 
 public enum TimerState {
-    INITIAL,
+    INACTIVE,
     RUNNING,
     PAUSE
 }
