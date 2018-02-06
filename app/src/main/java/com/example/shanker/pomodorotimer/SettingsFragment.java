@@ -24,6 +24,8 @@ public class SettingsFragment extends Fragment {
     private int breakTime;
     private int longBreakTime;
     private int recurringCount;
+    private static final String MINUTES_TEXT = " Minutes";
+    private static final String SESSION_TEXT = " Sessions";
 
     @Nullable
     @Override
@@ -52,19 +54,19 @@ public class SettingsFragment extends Fragment {
         //Default time for work, break and long break
 
         //work time default values
-        workTimeText.setText(workTimeSeekBar.getProgress()+" Minutes");
+        workTimeText.setText(workTimeSeekBar.getProgress()+MINUTES_TEXT);
         workTime =workTimeSeekBar.getProgress();
 
         //break time default values
-        breakTimeText.setText((breakTimeSeekBar.getProgress()+" Minutes"));
+        breakTimeText.setText((breakTimeSeekBar.getProgress()+MINUTES_TEXT));
         breakTime =breakTimeSeekBar.getProgress();
 
         //long break default values
-        longBreakTimeText.setText(longBreakSeekBar.getProgress()+" Minutes");
+        longBreakTimeText.setText(longBreakSeekBar.getProgress()+MINUTES_TEXT);
         longBreakTime =longBreakSeekBar.getProgress();
 
         //recurring session count default values
-        sessionCountText.setText(recurringCountSeekBar.getProgress()+" Sessions");
+        sessionCountText.setText(recurringCountSeekBar.getProgress()+SESSION_TEXT);
         recurringCount =recurringCountSeekBar.getProgress();
 
         workTimeSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -72,17 +74,17 @@ public class SettingsFragment extends Fragment {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
                 progressValue=i;
-                workTimeText.setText(progressValue+" Minutes");
+                workTimeText.setText(progressValue+MINUTES_TEXT);
             }
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-                workTimeText.setText(progressValue+" Minutes");
+                workTimeText.setText(progressValue+MINUTES_TEXT);
             }
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                workTimeText.setText(progressValue+" Minutes");
+                workTimeText.setText(progressValue+MINUTES_TEXT);
                 workTime =progressValue;
             }
         });
@@ -92,7 +94,7 @@ public class SettingsFragment extends Fragment {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
                 progressValue=i;
-                breakTimeText.setText(progressValue+" Minutes");
+                breakTimeText.setText(progressValue+MINUTES_TEXT);
             }
 
             @Override
@@ -100,7 +102,7 @@ public class SettingsFragment extends Fragment {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                breakTimeText.setText(progressValue+" Minutes");
+                breakTimeText.setText(progressValue+MINUTES_TEXT);
                 breakTime =progressValue;
             }
         });
@@ -110,7 +112,7 @@ public class SettingsFragment extends Fragment {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
                 progressValue=i;
-                longBreakTimeText.setText(progressValue+" Minutes");
+                longBreakTimeText.setText(progressValue+MINUTES_TEXT);
             }
 
             @Override
@@ -118,7 +120,7 @@ public class SettingsFragment extends Fragment {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                longBreakTimeText.setText(progressValue+" Minutes");
+                longBreakTimeText.setText(progressValue+MINUTES_TEXT);
                 longBreakTime =progressValue;
             }
         });
@@ -128,7 +130,7 @@ public class SettingsFragment extends Fragment {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
                 progressValue=i;
-                sessionCountText.setText(progressValue+" Sessions");
+                sessionCountText.setText(progressValue+SESSION_TEXT);
             }
 
             @Override
@@ -136,7 +138,7 @@ public class SettingsFragment extends Fragment {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                sessionCountText.setText(progressValue+" Sessions");
+                sessionCountText.setText(progressValue+SESSION_TEXT);
                 recurringCount =progressValue;
             }
         });

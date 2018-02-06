@@ -9,7 +9,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -23,7 +22,6 @@ import com.example.shanker.pomodorotimer.types.TimerState;
 import com.example.shanker.pomodorotimer.types.SessionType;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
-import android.support.v4.app.FragmentManager;
 
 import static java.lang.String.format;
 
@@ -34,6 +32,18 @@ public class MainActivity extends AppCompatActivity {
     private static final int SECONDS = 60;
     private static final int ONE_SECOND = 1000;
     private static final int FRAG_DELAY = 500;
+    private static final String START_TEXT = "Start";
+    private static final String STOP_TEXT = "Stop";
+    private static final String CANCEL_TEXT = "Cancel";
+    private static final String BREAK_COMPLETE_MSG = "Break Complete";
+    private static final String WORK_COMPLETE_MSG = "Session Complete";
+    private static final String START_BREAK_TEXT = "Start Break";
+    private static final String SKIP_BREAK_TEXT = "Skip Break";
+    private static final String START_SESSION_TEXT = "Start Session";
+    private static final String WORK_TIME_TEXT = "Work Time!";
+    private static final String BREAK_TIME_TEXT = "Short Break!";
+    private static final String LONG_BREAK_TIME_TEXT = "long Break!";
+    private static final String EMPTY_STRING = "";
 
     private TextView mCountDownText, mActivityName, mTotalElapsedTime;
     private Button mCountDownButton;
@@ -41,16 +51,12 @@ public class MainActivity extends AppCompatActivity {
     private AlertDialog mAlertDialog;
     private int mNumOfWorkSessions=0;
     private int totalSeconds=0;
-    private String mPlaceHolderActivityName;
-    private String mDefaultActivity = "Default Activity";
-    private String mEmpty = "";
-    boolean mStartStop = true;
-
-    MediaPlayer mTimePauseSound;
-    MediaPlayer mSessionCompleteSound;
-    Handler mHandler = new Handler();
-    TimerState mTimerState;
-    SessionType mSessionType;
+    private boolean mStartStop = true;
+    private MediaPlayer mTimePauseSound;
+    private MediaPlayer mSessionCompleteSound;
+    private Handler mHandler;
+    private TimerState mTimerState;
+    private SessionType mSessionType;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,13 +64,14 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         //setting all required references
-        mCountDownText =findViewById(R.id.countdown_text_view);
-        mCountDownButton =findViewById(R.id.countdown_button);
-        mActivityName=findViewById(R.id.activity_name);
-        mTotalElapsedTime=findViewById(R.id.total_elapsed_time);
+        mCountDownText = findViewById(R.id.countdown_text_view);
+        mCountDownButton = findViewById(R.id.countdown_button);
+        mActivityName= findViewById(R.id.activity_name);
+        mTotalElapsedTime = findViewById(R.id.total_elapsed_time);
         mTimerState = TimerState.INACTIVE;
-        mTimePauseSound= MediaPlayer.create(this,R.raw.beep);
-        mSessionCompleteSound=MediaPlayer.create(this,R.raw.oringz);
+        mTimePauseSound = MediaPlayer.create(this,R.raw.beep);
+        mSessionCompleteSound = MediaPlayer.create(this,R.raw.oringz);
+        mHandler = new Handler();
 
         mCountDownText.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -84,65 +91,82 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar( (Toolbar) findViewById(R.id.toolbar) );
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(final Menu menu) {
+        getMenuInflater().inflate(R.menu.toolbar_menu,menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(final MenuItem item) {
+        if(item.getItemId()== R.id.action_settings){
+            Toast.makeText(MainActivity.this,"you have clicked on settings menu",Toast.LENGTH_SHORT).show();
+        } else if (item.getItemId()== R.id.action_history){
+            Toast.makeText(MainActivity.this,"you have clicked on history menu",Toast.LENGTH_SHORT).show();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    //this method is called when the button is clicked
     private void startStopTimer() {
-            if(mStartStop){
-                startTimer();
-            }else stopTimer();
+        if (mStartStop) { startTimer(); }
+        else { stopTimer(); }
     }
 
+    //resets the timer app
     private void stopTimer() {
-        mCountDownButton.setText("Start");
-        mSessionType=SessionType.WORK;
-        mStartStop=true;
-        SettingsFragment settingFrag = (SettingsFragment)getSupportFragmentManager().findFragmentById(R.id.settings_fragment);
-        FragmentManager fm = getSupportFragmentManager();
-        fm.beginTransaction()
-                .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
-                .show(settingFrag)
-                .commit();
+        mSessionType = SessionType.WORK;
+        mStartStop = true;
+        final SettingsFragment settingFrag = (SettingsFragment)getSupportFragmentManager().findFragmentById(R.id.settings_fragment);
+        getSupportFragmentManager().beginTransaction()
+            .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
+            .show(settingFrag)
+            .commit();
         pauseCountdown();
-        mCountDownText.setText(mEmpty);
-        mTotalElapsedTime.setText(mEmpty);
-        mActivityName.setText(mEmpty);
+        mCountDownText.setText(EMPTY_STRING);
+        mTotalElapsedTime.setText(EMPTY_STRING);
+        mActivityName.setText(EMPTY_STRING);
+        mCountDownButton.setText(START_TEXT);
     }
 
+    //starts the timer with assigned work, break, long break settings
     private void startTimer() {
         mSessionType=SessionType.WORK;
         mTimerState=TimerState.RUNNING;
-        SettingsFragment settingFrag = (SettingsFragment)getSupportFragmentManager().findFragmentById(R.id.settings_fragment);
-        mTimer=new Timer();
+        final SettingsFragment settingFrag = (SettingsFragment)getSupportFragmentManager().findFragmentById(R.id.settings_fragment);
+        mTimer = new Timer();
         mTimer.setWorkTime(TimeUnit.MINUTES.toSeconds(settingFrag.getWorkTime()));
         mTimer.setShortBreak(TimeUnit.MINUTES.toSeconds(settingFrag.getBreakTime()));
         mTimer.setLongBreak(TimeUnit.MINUTES.toSeconds(settingFrag.getLongBreakTime()));
         mTimer.setRecurringLongBreak(settingFrag.getRecurringCount());
-        mPlaceHolderActivityName = settingFrag.getEditActivityText();
 
         totalElapsedTime();
         mTimer.getCountDownTime(mSessionType);
-        FragmentManager fm = getSupportFragmentManager();
-        fm.beginTransaction()
-                .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
-                .hide(settingFrag)
-                .commit();
+        getSupportFragmentManager().beginTransaction()
+            .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
+            .hide(settingFrag)
+            .commit();
         if(!settingFrag.isHidden()){
             final Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     startCountdown();
-                    mActivityName.setText("WORK TIME!");
+                    mActivityName.setText(WORK_TIME_TEXT);
                 }
             }, 500);
-        }
-        else {
+        } else {
             startCountdown();
         }
-        mCountDownButton.setText("Stop");
-        mStartStop=false;
+        mCountDownButton.setText(STOP_TEXT);
+        mStartStop = false;
     }
 
+    //using this to calculate the total time a certain activity. It will be used to create history
+    //once History icon is clicked it should display all the previous activities along with time spent on that particular activity
+    //this feature is not yet implemented.
     private void totalElapsedTime() {
-        Runnable elapsedTimeRunnable = new Runnable() {
+        final Runnable elapsedTimeRunnable = new Runnable() {
             @Override
             public void run() {
                 if(!mStartStop) {
@@ -153,9 +177,9 @@ public class MainActivity extends AppCompatActivity {
                     totalMinutes = totalSeconds / MINUTES;
                     hours = totalMinutes / MINUTES;
                     minutes = totalMinutes % MINUTES;
-                    String elapsedTime = (hours > 0 ? hours : "") +
-                            (hours > 0 ? ":" : mEmpty) + (minutes > 0 ? minutes : mEmpty) +
-                            (minutes > 0 ? ":" : mEmpty) +
+                    String elapsedTime = (hours > 0 ? hours : EMPTY_STRING) +
+                            (hours > 0 ? ":" : EMPTY_STRING) + (minutes > 0 ? minutes : EMPTY_STRING) +
+                            (minutes > 0 ? ":" : EMPTY_STRING) +
                             format(Locale.US, "%02d", seconds);
                     mTotalElapsedTime.setText(elapsedTime);
                     totalSeconds++;
@@ -167,24 +191,7 @@ public class MainActivity extends AppCompatActivity {
         mHandler.postDelayed(elapsedTimeRunnable, FRAG_DELAY);
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater mMenuInflater = getMenuInflater();
-        mMenuInflater.inflate(R.menu.toolbar_menu,menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-            if(item.getItemId()==R.id.action_settings){
-                Toast.makeText(MainActivity.this,"you have clicked on settings menu",Toast.LENGTH_SHORT).show();
-            }
-        if(item.getItemId()==R.id.action_history){
-            Toast.makeText(MainActivity.this,"you have clicked on history menu",Toast.LENGTH_SHORT).show();
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
+    //this method is called when clicked on countdown text
     public void startPauseCountDown(){
         if(mTimerState == TimerState.RUNNING){
             pauseCountdown();
@@ -194,13 +201,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    //simple loop to count down the time
     public void startCountdown(){
-        if(mTimerState==TimerState.PAUSE){
+        if(mTimerState == TimerState.PAUSE){
             mTimer.unPauseCountDownTimer(mSessionType);
         }
-
-
-        Runnable mRunnable = new Runnable() {
+        final Runnable mRunnable = new Runnable() {
             @Override
             public void run() {
                 if(mTimer.getTimeRemaining()>=0&&mTimerState==TimerState.RUNNING) {
@@ -212,15 +218,14 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         };
-
         mHandler.postDelayed(mRunnable, 0);
         mTimerState = TimerState.RUNNING;
-
-        if(mSessionType==SessionType.WORK){
+        if(mSessionType == SessionType.WORK){
             mNumOfWorkSessions++;
         }
     }
 
+    //this method is called when countdown becomes zero
     private void onCountDownFinished() {
         mSessionCompleteSound.start();
         switch (mTimer.getSessionType()){
@@ -240,38 +245,40 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    //starts long break or short break based on the current session type
     public void startBreak(){
-        if(mNumOfWorkSessions==mTimer.getRecurringLongBreak()){
-            mSessionType= SessionType.LONG_BREAK;
+        if(mNumOfWorkSessions == mTimer.getRecurringLongBreak()){
+            mSessionType = SessionType.LONG_BREAK;
             resetWorkSessionsCount();
-            mActivityName.setText("LONG BREAK!");
+            mActivityName.setText(LONG_BREAK_TIME_TEXT);
         }
         else{
-            mSessionType= SessionType.SHORT_BREAK;
-            mActivityName.setText("SHORT BREAK");
+            mSessionType = SessionType.SHORT_BREAK;
+            mActivityName.setText(BREAK_TIME_TEXT);
         }
         startCountdown();
     }
 
+    //once the work time session equals to the recurring session count this method is called to reset.
     private void resetWorkSessionsCount() {
         mNumOfWorkSessions=0;
     }
 
+    //this alert box is created when break time is completed
     private AlertDialog startSessionDialog() {
         return new AlertDialog.Builder(this)
-                .setTitle("Break Complete")
-                .setPositiveButton("Begin Session", new DialogInterface.OnClickListener() {
+                .setTitle(BREAK_COMPLETE_MSG)
+                .setPositiveButton(START_SESSION_TEXT, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         removeCompletionNotification();
                         mSessionType=SessionType.WORK;
                         mTimer.getCountDownTime(mSessionType);
-                        mActivityName.setText("WORK TIME!");
+                        mActivityName.setText(WORK_TIME_TEXT);
                         startCountdown();
-
                     }
                 })
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                .setNegativeButton(CANCEL_TEXT, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         removeCompletionNotification();
@@ -281,19 +288,15 @@ public class MainActivity extends AppCompatActivity {
                 .create();
     }
 
-
-
+    //this alert dialog is called when work session is completed
     private AlertDialog breakSessionDialog() {
         return new AlertDialog.Builder(this)
-                .setTitle("Session Complete")
+                .setTitle(WORK_COMPLETE_MSG)
                 .setPositiveButton(
-                        "Start Break",
+                        START_BREAK_TEXT,
                         new DialogInterface.OnClickListener() {
                             @Override
-                            public void onClick(
-                                    DialogInterface dialog,
-                                    int which
-                            ) {
+                            public void onClick(DialogInterface dialog, int which) {
                                 removeCompletionNotification();
                                 startBreak();
                                 mTimer.getCountDownTime(mSessionType);
@@ -301,7 +304,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                 )
                 .setNegativeButton(
-                        "Skip Break",
+                        SKIP_BREAK_TEXT,
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(
@@ -310,15 +313,13 @@ public class MainActivity extends AppCompatActivity {
                             ) {
                                 removeCompletionNotification();
                                 mSessionType = SessionType.WORK;
-                                mActivityName.setText("WORK TIME!");
+                                mActivityName.setText(WORK_TIME_TEXT);
                                 startCountdown();
                                 mTimer.getCountDownTime(mSessionType);
                             }
                         }
                 )
-
-
-                .setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
+                .setNeutralButton(CANCEL_TEXT, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         removeCompletionNotification();
@@ -328,12 +329,13 @@ public class MainActivity extends AppCompatActivity {
                 .create();
     }
 
+    //this method is called to remove the alert dialog
     private void removeCompletionNotification() {
         NotificationManager notificationManager =(NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancel(NOTIFICATION_TAG);
     }
 
-//method is called to pause the timer
+    //method is called to pause the timer
     public void pauseCountdown(){
         mTimer.pauseCountDownTimer();
         mTimerState = TimerState.PAUSE;
@@ -342,11 +344,11 @@ public class MainActivity extends AppCompatActivity {
     //the count down text is updated in this method
     public void updateTimer(){
         int timeRemaining = mTimer.getTimeRemaining();
-        int minutes = timeRemaining/60;
-        int seconds = timeRemaining%60;
+        int minutes = timeRemaining / SECONDS;
+        int seconds = timeRemaining % SECONDS;
 
-        String currentTick = (minutes > 0 ? minutes : mEmpty) +
-                (minutes > 0 ? ":" : mEmpty)  +
+        String currentTick = (minutes > 0 ? minutes : EMPTY_STRING) +
+                (minutes > 0 ? ":" : EMPTY_STRING)  +
                 format(Locale.US, "%02d", seconds);
 
         mCountDownText.setText(currentTick);
