@@ -11,7 +11,8 @@
         android:layout_alignParentLeft="true"
         android:layout_marginTop="50dp"
         android:width="250dp"
-        android:hint="Enter Activity Name"/>
+        android:hint="Enter Activity Name"
+        android:text=""/>
 
     <!--<android.support.v7.widget.AppCompatTextView-->
         <!--android:id="@+id/time_elapsed"-->
@@ -126,6 +127,13 @@
         <!--android:layout_height="wrap_content"-->
         <!--android:layout_centerHorizontal="true"-->
         <!--android:layout_marginTop="400dp"/>-->
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/history_display_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20dp"
+        android:layout_centerHorizontal="true"
+        />
 
 
 

@@ -3,18 +3,23 @@ package com.example.shanker.pomodorotimer.activity;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Handler;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.support.v7.widget.Toolbar;
 import android.widget.Toast;
+
+import com.example.shanker.pomodorotimer.HistoryActivity;
 import com.example.shanker.pomodorotimer.R;
 import com.example.shanker.pomodorotimer.SettingsFragment;
 import com.example.shanker.pomodorotimer.utility.Timer;
@@ -44,8 +49,9 @@ public class MainActivity extends AppCompatActivity {
     private static final String BREAK_TIME_TEXT = "Short Break!";
     private static final String LONG_BREAK_TIME_TEXT = "long Break!";
     private static final String EMPTY_STRING = "";
+    private static final String DEFAULT_ACTIVITY_NAME = "Default Activity";
 
-    private TextView mCountDownText, mActivityName, mTotalElapsedTime;
+    private TextView mCountDownText, mActivityName, mTotalElapsedTime, mHistoryDisplay;
     private Button mCountDownButton;
     private Timer mTimer;
     private AlertDialog mAlertDialog;
@@ -57,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
     private Handler mHandler;
     private TimerState mTimerState;
     private SessionType mSessionType;
+    private EditText mActivityInput;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
         mCountDownText = findViewById(R.id.countdown_text_view);
         mCountDownButton = findViewById(R.id.countdown_button);
         mActivityName= findViewById(R.id.activity_name);
+        mActivityInput = findViewById(R.id.activity_input);
         mTotalElapsedTime = findViewById(R.id.total_elapsed_time);
         mTimerState = TimerState.INACTIVE;
         mTimePauseSound = MediaPlayer.create(this,R.raw.beep);
@@ -102,7 +110,10 @@ public class MainActivity extends AppCompatActivity {
         if(item.getItemId()== R.id.action_settings){
             Toast.makeText(MainActivity.this,"you have clicked on settings menu",Toast.LENGTH_SHORT).show();
         } else if (item.getItemId()== R.id.action_history){
+            Intent historyIntent = new Intent(MainActivity.this, HistoryActivity.class);
+            startActivity(historyIntent);
             Toast.makeText(MainActivity.this,"you have clicked on history menu",Toast.LENGTH_SHORT).show();
+            return false;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -127,6 +138,7 @@ public class MainActivity extends AppCompatActivity {
         mTotalElapsedTime.setText(EMPTY_STRING);
         mActivityName.setText(EMPTY_STRING);
         mCountDownButton.setText(START_TEXT);
+        settingFrag.setHistoryDisplay(START_TEXT);
     }
 
     //starts the timer with assigned work, break, long break settings
@@ -160,6 +172,10 @@ public class MainActivity extends AppCompatActivity {
         }
         mCountDownButton.setText(STOP_TEXT);
         mStartStop = false;
+
+       // if(!TextUtils.isEmpty(mActivityInput.getText().toString())){
+         //  mActivityName.setText(mActivityInput.getText().toString());
+        //}else mActivityName.setText(DEFAULT_ACTIVITY_NAME);
     }
 
     //using this to calculate the total time a certain activity. It will be used to create history

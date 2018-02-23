@@ -18,7 +18,7 @@ public class SettingsFragment extends Fragment {
     private TextView workTimeText;
     private TextView breakTimeText;
     private TextView longBreakTimeText;
-    private TextView sessionCountText;
+    private TextView sessionCountText, historyDisplay;
     private EditText editActivityText;
     private int workTime;
     private int breakTime;
@@ -42,6 +42,7 @@ public class SettingsFragment extends Fragment {
         breakTimeText = view.findViewById(R.id.break_text_view);
         longBreakTimeText = view.findViewById(R.id.long_break_text_view);
         sessionCountText =view.findViewById(R.id.recurring_text_view);
+        historyDisplay = view.findViewById(R.id.history_display_text);
 
         editActivityText = view.findViewById(R.id.activity_input);
 
@@ -162,5 +163,9 @@ public class SettingsFragment extends Fragment {
     }
     public String getEditActivityText() {
         return editActivityText.getText().toString();
+    }
+
+    public void setHistoryDisplay( String name) {
+        this.historyDisplay.setText(name);
     }
 }
